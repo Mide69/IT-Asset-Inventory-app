@@ -4,7 +4,10 @@ const studentSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   email: Joi.string().email().required(),
   age: Joi.number().integer().min(16).max(100).required(),
-  course: Joi.string().min(2).max(100).required()
+  course: Joi.string().min(2).max(100).required(),
+  level: Joi.string().valid('100', '200', '300', '400', '500').required(),
+  sex: Joi.string().valid('Male', 'Female').required(),
+  department: Joi.string().valid('Computer Science', 'Engineering', 'Business', 'Medicine', 'Arts', 'Science').required()
 });
 
 const validateStudent = (req, res, next) => {

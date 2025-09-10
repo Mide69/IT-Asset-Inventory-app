@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 
 const studentRoutes = require('./routes/students');
 
@@ -15,7 +16,15 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Serve static files only if build directory exists
+const buildPath = path.join(__dirname, '../frontend/build');
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+}
 
 // Health check endpoint
 app.get('/healthcheck', (req, res) => {
@@ -29,9 +38,20 @@ app.get('/healthcheck', (req, res) => {
 // API routes
 app.use('/api/v1/students', studentRoutes);
 
-// Serve React app
+// Serve React app only if build exists
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+  const indexPath = path.join(__dirname, '../frontend/build/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({
+      message: 'Student CRUD API is running!',
+      endpoints: {
+        healthcheck: '/healthcheck',
+        students: '/api/v1/students'
+      }
+    });
+  }
 });
 
 // Error handling middleware

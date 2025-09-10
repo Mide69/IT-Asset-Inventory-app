@@ -8,6 +8,10 @@ const createStudentsTable = `
     email TEXT UNIQUE NOT NULL,
     age INTEGER NOT NULL,
     course TEXT NOT NULL,
+    level TEXT NOT NULL,
+    sex TEXT NOT NULL,
+    department TEXT NOT NULL,
+    picture TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
