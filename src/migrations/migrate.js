@@ -3,24 +3,24 @@ const db = require('../config/database');
 
 const createStudentsTable = `
   CREATE TABLE IF NOT EXISTS students (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     age INTEGER NOT NULL,
-    course TEXT NOT NULL,
-    level TEXT NOT NULL,
-    sex TEXT NOT NULL,
-    department TEXT NOT NULL,
+    course VARCHAR(100) NOT NULL,
+    level VARCHAR(10) NOT NULL,
+    sex VARCHAR(10) NOT NULL,
+    department VARCHAR(100) NOT NULL,
     picture TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 `;
 
 async function migrate() {
   try {
     console.log('Running database migrations...');
-    await db.run(createStudentsTable);
+    await db.query(createStudentsTable);
     console.log('✅ Students table created successfully');
     process.exit(0);
   } catch (error) {

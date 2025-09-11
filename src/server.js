@@ -26,6 +26,11 @@ if (fs.existsSync(buildPath)) {
   app.use(express.static(buildPath));
 }
 
+// Test route
+app.get('/test', (req, res) => {
+  res.send('<h1>Server is working!</h1>');
+});
+
 // Health check endpoint
 app.get('/healthcheck', (req, res) => {
   res.json({
@@ -38,28 +43,28 @@ app.get('/healthcheck', (req, res) => {
 // API routes
 app.use('/api/v1/students', studentRoutes);
 
-// Serve React app only if build exists
+// Simple home route
+app.get('/', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>Student Management System</title></head>
+      <body style="font-family: Arial; padding: 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; min-height: 100vh;">
+        <h1>🎓 Student Management System</h1>
+        <p>API is running successfully!</p>
+        <h3>Available Endpoints:</h3>
+        <ul>
+          <li><a href="/healthcheck" style="color: #fff;">/healthcheck</a> - Health check</li>
+          <li><a href="/api/v1/students" style="color: #fff;">/api/v1/students</a> - Students API</li>
+          <li><a href="/test" style="color: #fff;">/test</a> - Test route</li>
+        </ul>
+      </body>
+    </html>
+  `);
+});
+
+// Catch all other routes
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, '../frontend/build/index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.send(`
-      <html>
-        <head><title>Student Management API</title></head>
-        <body style="font-family: Arial; padding: 20px; background: #f5f5f5;">
-          <h1>🎓 Student Management API</h1>
-          <p>Frontend build not found. API is running!</p>
-          <h3>Available Endpoints:</h3>
-          <ul>
-            <li><a href="/healthcheck">/healthcheck</a> - Health check</li>
-            <li><a href="/api/v1/students">/api/v1/students</a> - Students API</li>
-          </ul>
-          <p>Run <code>npm run build</code> to build the frontend.</p>
-        </body>
-      </html>
-    `);
-  }
+  res.redirect('/');
 });
 
 // Error handling middleware

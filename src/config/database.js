@@ -1,43 +1,41 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
+const { Pool } = require('pg');
 
 class Database {
   constructor() {
-    this.dbPath = process.env.DB_PATH || './database/students.db';
-    this.ensureDirectoryExists();
-    this.db = new sqlite3.Database(this.dbPath);
+    this.pool = new Pool({
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 5432,
+      database: process.env.DB_NAME || 'student_management',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'password',
+    });
   }
 
-  ensureDirectoryExists() {
-    const dir = path.dirname(this.dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+  async query(text, params = []) {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(text, params);
+      return result.rows;
+    } finally {
+      client.release();
     }
   }
 
-  query(sql, params = []) {
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
+  async run(text, params = []) {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(text, params);
+      return {
+        id: result.rows[0]?.id,
+        changes: result.rowCount
+      };
+    } finally {
+      client.release();
+    }
   }
 
-  run(sql, params = []) {
-    return new Promise((resolve, reject) => {
-      this.db.run(sql, params, function(err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, changes: this.changes });
-      });
-    });
-  }
-
-  close() {
-    return new Promise((resolve) => {
-      this.db.close(resolve);
-    });
+  async close() {
+    await this.pool.end();
   }
 }
 
