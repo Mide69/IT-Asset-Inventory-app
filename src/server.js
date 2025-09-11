@@ -44,13 +44,21 @@ app.get('*', (req, res) => {
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    res.json({
-      message: 'Student CRUD API is running!',
-      endpoints: {
-        healthcheck: '/healthcheck',
-        students: '/api/v1/students'
-      }
-    });
+    res.send(`
+      <html>
+        <head><title>Student Management API</title></head>
+        <body style="font-family: Arial; padding: 20px; background: #f5f5f5;">
+          <h1>🎓 Student Management API</h1>
+          <p>Frontend build not found. API is running!</p>
+          <h3>Available Endpoints:</h3>
+          <ul>
+            <li><a href="/healthcheck">/healthcheck</a> - Health check</li>
+            <li><a href="/api/v1/students">/api/v1/students</a> - Students API</li>
+          </ul>
+          <p>Run <code>npm run build</code> to build the frontend.</p>
+        </body>
+      </html>
+    `);
   }
 });
 
@@ -71,7 +79,7 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/healthcheck`);
   console.log(`🎓 Students API: http://localhost:${PORT}/api/v1/students`);
