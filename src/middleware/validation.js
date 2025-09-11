@@ -11,6 +11,7 @@ const studentSchema = Joi.object({
 });
 
 const validateStudent = (req, res, next) => {
+  if (req.body.age) req.body.age = parseInt(req.body.age);
   const { error } = studentSchema.validate(req.body);
   if (error) {
     return res.status(400).json({

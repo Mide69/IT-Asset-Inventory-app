@@ -14,14 +14,25 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData();
-    Object.keys(formData).forEach(key => {
-      data.append(key, formData[key]);
-    });
-    if (picture) {
-      data.append('picture', picture);
+    try {
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+          data.append(key, formData[key]);
+        }
+      });
+      if (picture) {
+        data.append('picture', picture);
+      }
+      
+      // Debug: log form data
+      console.log('Form data:', Object.fromEntries(data));
+      
+      await onSubmit(data);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('Error creating student: ' + error.message);
     }
-    onSubmit(data);
   };
 
   return (

@@ -14,17 +14,29 @@ function App() {
       const url = editingStudent ? `${API_BASE}/${editingStudent.id}` : API_BASE;
       const method = editingStudent ? 'PUT' : 'POST';
       
+      console.log('Submitting to:', url, 'Method:', method);
+      
       const response = await fetch(url, {
         method,
         body: formData
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      console.log('API Response:', result);
+
+      if (response.ok && result.success) {
+        alert('Student saved successfully!');
         setCurrentPage('list');
         setEditingStudent(null);
+      } else {
+        alert('Error: ' + (result.message || 'Failed to save student'));
+        if (result.errors) {
+          console.error('Validation errors:', result.errors);
+        }
       }
     } catch (error) {
       console.error('Error saving student:', error);
+      alert('Network error: ' + error.message);
     }
   };
 

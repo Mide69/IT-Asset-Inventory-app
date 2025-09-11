@@ -1,42 +1,20 @@
 const { Pool } = require('pg');
 
-class Database {
-  constructor() {
-    this.pool = new Pool({
-      host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT || 5432,
-      database: process.env.DB_NAME || 'student_management',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'password',
-    });
-  }
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-  async query(text, params = []) {
-    const client = await this.pool.connect();
-    try {
-      const result = await client.query(text, params);
-      return result.rows;
-    } finally {
-      client.release();
-    }
-  }
+pool.on('connect', () => console.log('✅ PostgreSQL connected'));
+pool.on('error', (err) => console.error('❌ PostgreSQL error:', err));
 
-  async run(text, params = []) {
-    const client = await this.pool.connect();
-    try {
-      const result = await client.query(text, params);
-      return {
-        id: result.rows[0]?.id,
-        changes: result.rowCount
-      };
-    } finally {
-      client.release();
-    }
-  }
-
-  async close() {
-    await this.pool.end();
-  }
-}
-
-module.exports = new Database();
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  end: () => pool.end()
+};
