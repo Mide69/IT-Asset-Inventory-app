@@ -57,9 +57,8 @@ app.use((err, req, res, next) => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  require('./config/database').end();
+process.on('SIGINT', () => {
+  console.log('\n👋 Shutting down gracefully...');
   process.exit(0);
 });
 
