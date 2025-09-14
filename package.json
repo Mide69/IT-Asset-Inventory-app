@@ -9,7 +9,8 @@
     "migrate": "node src/migrations/migrate.js",
     "build": "cd frontend && npm run build",
     "install:frontend": "cd frontend && npm install",
-    "setup": "npm install && npm run install:frontend && npm run migrate"
+    "setup": "npm install && npm run install:frontend && npm run migrate",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -23,6 +24,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": ["nodejs", "postgresql", "react", "student-management"],
   "author": "Your Name",

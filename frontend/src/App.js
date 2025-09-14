@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './App.css';
-import StudentForm from './components/StudentForm';
 import StudentList from './components/StudentList';
+import StudentForm from './components/StudentForm';
+import './App.css';
 
 const API_BASE = '/api/v1/students';
 
@@ -14,18 +14,15 @@ function App() {
       const url = editingStudent ? `${API_BASE}/${editingStudent.id}` : API_BASE;
       const method = editingStudent ? 'PUT' : 'POST';
       
-      console.log('Submitting to:', url, 'Method:', method);
-      
       const response = await fetch(url, {
         method,
         body: formData
       });
 
       const result = await response.json();
-      console.log('API Response:', result);
 
       if (response.ok && result.success) {
-        alert('Student saved successfully!');
+        alert(editingStudent ? 'Student updated successfully!' : 'Student created successfully!');
         setCurrentPage('list');
         setEditingStudent(null);
       } else {
@@ -45,45 +42,67 @@ function App() {
     setCurrentPage('form');
   };
 
-  const handleCancel = () => {
-    setEditingStudent(null);
-    setCurrentPage('list');
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this student?')) {
+      try {
+        const response = await fetch(`${API_BASE}/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert('Student deleted successfully!');
+          // Refresh the list by switching pages
+          setCurrentPage('form');
+          setTimeout(() => setCurrentPage('list'), 100);
+        } else {
+          alert('Error: ' + (result.message || 'Failed to delete student'));
+        }
+      } catch (error) {
+        console.error('Error deleting student:', error);
+        alert('Network error: ' + error.message);
+      }
+    }
   };
 
   return (
     <div className="App">
-      <header className="header">
+      <nav className="navbar">
         <h1>🎓 Student Management System</h1>
-        <nav className="nav-buttons">
+        <div className="nav-buttons">
           <button 
-            className={`btn ${currentPage === 'list' ? 'btn-active' : 'btn-primary'}`}
             onClick={() => setCurrentPage('list')}
+            className={currentPage === 'list' ? 'active' : ''}
           >
-            View Students
+            📋 Student List
           </button>
           <button 
-            className={`btn ${currentPage === 'form' ? 'btn-active' : 'btn-primary'}`}
             onClick={() => {
               setEditingStudent(null);
               setCurrentPage('form');
             }}
+            className={currentPage === 'form' ? 'active' : ''}
           >
-            Add Student
+            ➕ Add Student
           </button>
-        </nav>
-      </header>
+        </div>
+      </nav>
 
-      {currentPage === 'form' && (
-        <StudentForm 
-          student={editingStudent}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
-      )}
-
-      {currentPage === 'list' && (
-        <StudentList onEdit={handleEdit} />
-      )}
+      <main className="main-content">
+        {currentPage === 'list' ? (
+          <StudentList onEdit={handleEdit} onDelete={handleDelete} />
+        ) : (
+          <StudentForm 
+            onSubmit={handleSubmit}
+            editingStudent={editingStudent}
+            onCancel={() => {
+              setEditingStudent(null);
+              setCurrentPage('list');
+            }}
+          />
+        )}
+      </main>
     </div>
   );
 }

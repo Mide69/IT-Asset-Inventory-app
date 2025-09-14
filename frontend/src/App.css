@@ -1,284 +1,253 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%),
               url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="books" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none"/><rect x="2" y="8" width="3" height="10" fill="%23ffffff" opacity="0.1"/><rect x="6" y="6" width="3" height="12" fill="%23ffffff" opacity="0.08"/><rect x="10" y="7" width="3" height="11" fill="%23ffffff" opacity="0.1"/><rect x="14" y="5" width="3" height="13" fill="%23ffffff" opacity="0.09"/></pattern></defs><rect width="100" height="100" fill="url(%23books)"/></svg>');
   background-size: cover, 100px 100px;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .App {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
 }
 
-.header {
+.navbar {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 20px 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar h1 {
+  color: white;
+  margin: 0;
+  font-size: 1.8rem;
 }
 
 .nav-buttons {
   display: flex;
-  gap: 10px;
+  gap: 1rem;
 }
 
-.btn-active {
-  background: #28a745 !important;
+.nav-buttons button {
+  background: rgba(255, 255, 255, 0.2);
   color: white;
-}
-
-.header h1 {
-  color: #333;
-  font-size: 2rem;
-}
-
-.btn {
-  padding: 12px 24px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
   transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
+  font-weight: 500;
 }
 
-.btn-primary {
-  background: #667eea;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #5a6fd8;
+.nav-buttons button:hover {
+  background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
 
-.btn-success {
-  background: #28a745;
+.nav-buttons button.active {
+  background: white;
+  color: #1e3c72;
+}
+
+.main-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.student-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.student-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.student-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.student-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid #1e3c72;
+}
+
+.student-info h3 {
+  color: #1e3c72;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.student-info p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.student-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-edit {
+  background: #4CAF50;
   color: white;
 }
 
-.btn-success:hover {
-  background: #218838;
+.btn-edit:hover {
+  background: #45a049;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #da190b;
+}
+
+.student-form {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1e3c72;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1e3c72;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background: #1e3c72;
+  color: white;
+  padding: 0.75rem 2rem;
+}
+
+.btn-primary:hover {
+  background: #2a5298;
 }
 
 .btn-secondary {
   background: #6c757d;
   color: white;
+  padding: 0.75rem 2rem;
 }
 
 .btn-secondary:hover {
   background: #5a6268;
 }
 
-.btn-edit {
-  background: #ffc107;
-  color: #212529;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-}
-
-.btn-edit:hover {
-  background: #e0a800;
-}
-
-.btn-delete {
-  background: #dc3545;
-  color: white;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-}
-
-.btn-delete:hover {
-  background: #c82333;
-}
-
-.form-container {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-bottom: 30px;
-}
-
-.form-container h2 {
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.student-form {
-  display: grid;
-  gap: 15px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.student-form input,
-.student-form select {
-  padding: 15px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-  background: white;
-}
-
-.file-input {
-  padding: 10px !important;
-  border: 2px dashed #667eea !important;
-  background: #f8f9fa;
-}
-
 .search-filters {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 10px;
-}
-
-.search-input {
-  padding: 12px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.search-filters select {
-  padding: 12px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  background: white;
-}
-
-.student-photo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 10px;
-  border: 3px solid #667eea;
-}
-
-.student-form input:focus,
-.student-form select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.search-input:focus,
-.search-filters select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-actions {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: end;
 }
 
-.students-container {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.students-container h2 {
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
+.search-filters input,
+.search-filters select {
+  padding: 0.5rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  min-width: 150px;
 }
 
 .no-students {
   text-align: center;
-  color: #6c757d;
-  font-size: 1.1rem;
-  padding: 40px;
-}
-
-.students-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.student-card {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.student-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-}
-
-.student-card h3 {
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 1.3rem;
-}
-
-.student-card p {
-  color: #666;
-  margin-bottom: 8px;
-  line-height: 1.5;
-}
-
-.card-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: flex-end;
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 3rem;
 }
 
 @media (max-width: 768px) {
-  .App {
-    padding: 10px;
-  }
-  
-  .header {
+  .navbar {
     flex-direction: column;
-    gap: 15px;
+    gap: 1rem;
     text-align: center;
   }
   
-  .header h1 {
-    font-size: 1.5rem;
-  }
-  
   .nav-buttons {
-    justify-content: center;
-  }
-  
-  .students-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-actions {
     flex-direction: column;
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .student-list {
+    grid-template-columns: 1fr;
   }
   
   .search-filters {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+  
+  .search-filters input,
+  .search-filters select {
+    width: 100%;
   }
 }

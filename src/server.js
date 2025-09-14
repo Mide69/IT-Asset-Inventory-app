@@ -16,7 +16,9 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for React app
+}));
 app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
@@ -31,7 +33,7 @@ app.get('/healthcheck', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -40,10 +42,53 @@ app.use('/api/v1/students', require('./routes/students'));
 // Serve React app for all other routes
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, '../frontend/build/index.html');
+  
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    res.status(404).json({ message: 'Frontend build not found' });
+    // Fallback if build not found
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Student Management System</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              padding: 20px; 
+              background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+              color: white; 
+              min-height: 100vh; 
+              margin: 0;
+            }
+            .container { max-width: 800px; margin: 0 auto; text-align: center; padding-top: 50px; }
+            .btn { 
+              background: #fff; 
+              color: #1e3c72; 
+              padding: 12px 24px; 
+              border: none; 
+              border-radius: 5px; 
+              margin: 10px; 
+              cursor: pointer; 
+              text-decoration: none;
+              display: inline-block;
+            }
+            .btn:hover { background: #f0f0f0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🎓 Student Management System</h1>
+            <p>Frontend build not found. API is running!</p>
+            <h3>Available Endpoints:</h3>
+            <a href="/healthcheck" class="btn">Health Check</a>
+            <a href="/api/v1/students" class="btn">Students API</a>
+            <p><strong>To fix:</strong> Run <code>npm run build</code> on the server</p>
+          </div>
+        </body>
+      </html>
+    `);
   }
 });
 
@@ -62,8 +107,14 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📊 Health: http://localhost:${PORT}/healthcheck`);
+  console.log(`🎓 Students API: http://localhost:${PORT}/api/v1/students`);
 });
