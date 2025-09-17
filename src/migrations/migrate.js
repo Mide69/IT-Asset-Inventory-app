@@ -1,31 +1,40 @@
 require('dotenv').config();
 const db = require('../config/database');
 
-const createStudentsTable = `
-  CREATE TABLE IF NOT EXISTS students (
+const createAssetsTable = `
+  CREATE TABLE IF NOT EXISTS assets (
     id SERIAL PRIMARY KEY,
+    asset_tag VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    age INTEGER NOT NULL CHECK (age >= 16 AND age <= 100),
-    course VARCHAR(100) NOT NULL,
-    level VARCHAR(10) NOT NULL CHECK (level IN ('100', '200', '300', '400', '500')),
-    sex VARCHAR(10) NOT NULL CHECK (sex IN ('Male', 'Female')),
-    department VARCHAR(100) NOT NULL CHECK (department IN ('Computer Science', 'Engineering', 'Business', 'Medicine', 'Arts', 'Science')),
-    picture TEXT,
+    category VARCHAR(50) NOT NULL CHECK (category IN ('Laptop', 'Desktop', 'Server', 'Network', 'Mobile', 'Printer', 'Monitor', 'Other')),
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    serial_number VARCHAR(100) UNIQUE,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Active', 'Inactive', 'Maintenance', 'Disposed', 'Lost')),
+    location VARCHAR(100) NOT NULL,
+    department VARCHAR(50) NOT NULL CHECK (department IN ('IT', 'HR', 'Finance', 'Marketing', 'Operations', 'Management')),
+    assigned_to VARCHAR(100),
+    purchase_date DATE,
+    warranty_expiry DATE,
+    cost DECIMAL(10,2),
+    notes TEXT,
+    image TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 
-  CREATE INDEX IF NOT EXISTS idx_students_email ON students(email);
-  CREATE INDEX IF NOT EXISTS idx_students_level ON students(level);
-  CREATE INDEX IF NOT EXISTS idx_students_department ON students(department);
+  CREATE INDEX IF NOT EXISTS idx_assets_asset_tag ON assets(asset_tag);
+  CREATE INDEX IF NOT EXISTS idx_assets_category ON assets(category);
+  CREATE INDEX IF NOT EXISTS idx_assets_status ON assets(status);
+  CREATE INDEX IF NOT EXISTS idx_assets_department ON assets(department);
+  CREATE INDEX IF NOT EXISTS idx_assets_location ON assets(location);
 `;
 
 async function migrate() {
   try {
     console.log('🔄 Running database migrations...');
-    await db.query(createStudentsTable);
-    console.log('✅ Students table created with indexes');
+    await db.query(createAssetsTable);
+    console.log('✅ Assets table created with indexes');
     process.exit(0);
   } catch (error) {
     console.error('❌ Migration failed:', error.message);

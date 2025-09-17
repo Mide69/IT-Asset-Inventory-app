@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import StudentList from './components/StudentList';
-import StudentForm from './components/StudentForm';
+import AssetList from './components/AssetList';
+import AssetForm from './components/AssetForm';
 import './App.css';
 
-const API_BASE = '/api/v1/students';
+const API_BASE = '/api/v1/assets';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('list');
-  const [editingStudent, setEditingStudent] = useState(null);
+  const [editingAsset, setEditingAsset] = useState(null);
 
   const handleSubmit = async (formData) => {
     try {
-      const url = editingStudent ? `${API_BASE}/${editingStudent.id}` : API_BASE;
-      const method = editingStudent ? 'PUT' : 'POST';
+      const url = editingAsset ? `${API_BASE}/${editingAsset.id}` : API_BASE;
+      const method = editingAsset ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
@@ -22,28 +22,28 @@ function App() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert(editingStudent ? 'Student updated successfully!' : 'Student created successfully!');
+        alert(editingAsset ? 'Asset updated successfully!' : 'Asset created successfully!');
         setCurrentPage('list');
-        setEditingStudent(null);
+        setEditingAsset(null);
       } else {
-        alert('Error: ' + (result.message || 'Failed to save student'));
+        alert('Error: ' + (result.message || 'Failed to save asset'));
         if (result.errors) {
           console.error('Validation errors:', result.errors);
         }
       }
     } catch (error) {
-      console.error('Error saving student:', error);
+      console.error('Error saving asset:', error);
       alert('Network error: ' + error.message);
     }
   };
 
-  const handleEdit = (student) => {
-    setEditingStudent(student);
+  const handleEdit = (asset) => {
+    setEditingAsset(asset);
     setCurrentPage('form');
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
+    if (window.confirm('Are you sure you want to delete this asset?')) {
       try {
         const response = await fetch(`${API_BASE}/${id}`, {
           method: 'DELETE'
@@ -52,15 +52,15 @@ function App() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-          alert('Student deleted successfully!');
+          alert('Asset deleted successfully!');
           // Refresh the list by switching pages
           setCurrentPage('form');
           setTimeout(() => setCurrentPage('list'), 100);
         } else {
-          alert('Error: ' + (result.message || 'Failed to delete student'));
+          alert('Error: ' + (result.message || 'Failed to delete asset'));
         }
       } catch (error) {
-        console.error('Error deleting student:', error);
+        console.error('Error deleting asset:', error);
         alert('Network error: ' + error.message);
       }
     }
@@ -69,35 +69,35 @@ function App() {
   return (
     <div className="App">
       <nav className="navbar">
-        <h1>🎓 Student Management System</h1>
+        <h1>💻 IT Asset Inventory System</h1>
         <div className="nav-buttons">
           <button 
             onClick={() => setCurrentPage('list')}
             className={currentPage === 'list' ? 'active' : ''}
           >
-            📋 Student List
+            📋 Asset List
           </button>
           <button 
             onClick={() => {
-              setEditingStudent(null);
+              setEditingAsset(null);
               setCurrentPage('form');
             }}
             className={currentPage === 'form' ? 'active' : ''}
           >
-            ➕ Add Student
+            ➕ Add Asset
           </button>
         </div>
       </nav>
 
       <main className="main-content">
         {currentPage === 'list' ? (
-          <StudentList onEdit={handleEdit} onDelete={handleDelete} />
+          <AssetList onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
-          <StudentForm 
+          <AssetForm 
             onSubmit={handleSubmit}
-            editingStudent={editingStudent}
+            editingAsset={editingAsset}
             onCancel={() => {
-              setEditingStudent(null);
+              setEditingAsset(null);
               setCurrentPage('list');
             }}
           />

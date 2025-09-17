@@ -1,7 +1,7 @@
 {
-  "name": "student-management-system",
+  "name": "it-asset-inventory-system",
   "version": "1.0.0",
-  "description": "Student Management System with Node.js, PostgreSQL and React",
+  "description": "IT Asset Management Inventory System with Node.js, PostgreSQL and React",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -28,7 +28,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["nodejs", "postgresql", "react", "student-management"],
+  "keywords": ["nodejs", "postgresql", "react", "it-asset-management", "inventory"],
   "author": "Your Name",
   "license": "MIT"
 }

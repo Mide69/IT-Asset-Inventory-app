@@ -1,8 +1,8 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%),
-              url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="books" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none"/><rect x="2" y="8" width="3" height="10" fill="%23ffffff" opacity="0.1"/><rect x="6" y="6" width="3" height="12" fill="%23ffffff" opacity="0.08"/><rect x="10" y="7" width="3" height="11" fill="%23ffffff" opacity="0.1"/><rect x="14" y="5" width="3" height="13" fill="%23ffffff" opacity="0.09"/></pattern></defs><rect width="100" height="100" fill="url(%23books)"/></svg>');
-  background-size: cover, 100px 100px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%),
+              url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="tech" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none"/><rect x="2" y="2" width="6" height="4" fill="%23ffffff" opacity="0.1"/><rect x="12" y="2" width="6" height="4" fill="%23ffffff" opacity="0.08"/><rect x="2" y="8" width="16" height="2" fill="%23ffffff" opacity="0.1"/><rect x="2" y="12" width="16" height="2" fill="%23ffffff" opacity="0.09"/><circle cx="5" cy="16" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="10" cy="16" r="1" fill="%23ffffff" opacity="0.08"/><circle cx="15" cy="16" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23tech)"/></svg>');
+  background-size: cover, 80px 80px;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -13,19 +13,21 @@ body {
 }
 
 .navbar {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(52, 73, 94, 0.9);
   backdrop-filter: blur(10px);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .navbar h1 {
   color: white;
   margin: 0;
   font-size: 1.8rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .nav-buttons {
@@ -34,7 +36,7 @@ body {
 }
 
 .nav-buttons button {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(52, 152, 219, 0.8);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 0.75rem 1.5rem;
@@ -45,62 +47,100 @@ body {
 }
 
 .nav-buttons button:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(41, 128, 185, 0.9);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .nav-buttons button.active {
-  background: white;
-  color: #1e3c72;
+  background: #3498db;
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
 .main-content {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-.student-list {
+.asset-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.student-card {
+.asset-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 4px solid #3498db;
 }
 
-.student-card:hover {
+.asset-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-.student-picture {
+.asset-image {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: 8px;
   object-fit: cover;
   margin-bottom: 1rem;
-  border: 3px solid #1e3c72;
+  border: 2px solid #3498db;
 }
 
-.student-info h3 {
-  color: #1e3c72;
+.asset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.asset-tag {
+  background: #3498db;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-active { background: #2ecc71; color: white; }
+.status-inactive { background: #95a5a6; color: white; }
+.status-maintenance { background: #f39c12; color: white; }
+.status-disposed { background: #e74c3c; color: white; }
+.status-lost { background: #8e44ad; color: white; }
+
+.asset-info h3 {
+  color: #2c3e50;
   margin: 0 0 0.5rem 0;
   font-size: 1.2rem;
 }
 
-.student-info p {
+.asset-info p {
   margin: 0.25rem 0;
   color: #666;
+  font-size: 0.9rem;
 }
 
-.student-actions {
+.asset-info .highlight {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.asset-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
@@ -113,33 +153,41 @@ body {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .btn-edit {
-  background: #4CAF50;
+  background: #27ae60;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #45a049;
+  background: #229954;
 }
 
 .btn-delete {
-  background: #f44336;
+  background: #e74c3c;
   color: white;
 }
 
 .btn-delete:hover {
-  background: #da190b;
+  background: #c0392b;
 }
 
-.student-form {
+.asset-form {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 2rem;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
@@ -149,12 +197,13 @@ body {
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #1e3c72;
-  font-weight: 500;
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #ddd;
@@ -164,9 +213,15 @@ body {
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
-  border-color: #1e3c72;
+  border-color: #3498db;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .form-actions {
@@ -177,23 +232,23 @@ body {
 }
 
 .btn-primary {
-  background: #1e3c72;
+  background: #3498db;
   color: white;
   padding: 0.75rem 2rem;
 }
 
 .btn-primary:hover {
-  background: #2a5298;
+  background: #2980b9;
 }
 
 .btn-secondary {
-  background: #6c757d;
+  background: #95a5a6;
   color: white;
   padding: 0.75rem 2rem;
 }
 
 .btn-secondary:hover {
-  background: #5a6268;
+  background: #7f8c8d;
 }
 
 .search-filters {
@@ -201,9 +256,9 @@ body {
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 1rem;
-  flex-wrap: wrap;
   align-items: end;
 }
 
@@ -212,14 +267,16 @@ body {
   padding: 0.5rem;
   border: 2px solid #ddd;
   border-radius: 6px;
-  min-width: 150px;
 }
 
-.no-students {
+.no-assets {
   text-align: center;
   color: white;
   font-size: 1.2rem;
   margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
 }
 
 @media (max-width: 768px) {
@@ -238,16 +295,15 @@ body {
     padding: 1rem;
   }
   
-  .student-list {
+  .asset-list {
     grid-template-columns: 1fr;
   }
   
   .search-filters {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
-  .search-filters input,
-  .search-filters select {
-    width: 100%;
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
