@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Student Management System
+# Multi-stage Dockerfile for IT Asset Inventory System
 
 # Stage 1: Build Frontend
 FROM node:18-alpine AS frontend-builder
@@ -17,9 +17,6 @@ RUN npm ci --only=production && npm cache clean --force
 # Stage 3: Production Image
 FROM node:18-alpine AS production
 WORKDIR /app
-
-# Install PostgreSQL client for migrations
-RUN apk add --no-cache postgresql-client
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -41,9 +38,9 @@ RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
 # Set environment variables with defaults
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV DB_HOST=localhost
+ENV DB_HOST=host.docker.internal
 ENV DB_PORT=5432
-ENV DB_NAME=student_management
+ENV DB_NAME=it_asset_inventory
 ENV DB_USER=postgres
 ENV DB_PASSWORD=password
 ENV LOG_LEVEL=info

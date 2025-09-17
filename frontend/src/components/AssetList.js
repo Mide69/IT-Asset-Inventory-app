@@ -45,9 +45,27 @@ const AssetList = ({ onEdit, onDelete }) => {
     return `status-badge status-${status.toLowerCase()}`;
   };
 
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'Laptop': '💻',
+      'Desktop': '🖥️',
+      'Server': '🖲️',
+      'Network': '🌐',
+      'Mobile': '📱',
+      'Printer': '🖨️',
+      'Monitor': '📺',
+      'Other': '⚙️'
+    };
+    return icons[category] || '⚙️';
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString();
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   const formatCurrency = (amount) => {
@@ -59,7 +77,12 @@ const AssetList = ({ onEdit, onDelete }) => {
   };
 
   if (loading) {
-    return <div className="loading">Loading assets...</div>;
+    return (
+      <div className="loading">
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+        <div>Loading your IT assets...</div>
+      </div>
+    );
   }
 
   return (
@@ -67,7 +90,7 @@ const AssetList = ({ onEdit, onDelete }) => {
       <div className="search-filters">
         <input
           type="text"
-          placeholder="Search assets..."
+          placeholder="🔍 Search assets by tag, name, brand, or model..."
           value={filters.search}
           onChange={(e) => handleFilterChange('search', e.target.value)}
         />
@@ -76,41 +99,41 @@ const AssetList = ({ onEdit, onDelete }) => {
           onChange={(e) => handleFilterChange('category', e.target.value)}
         >
           <option value="">All Categories</option>
-          <option value="Laptop">Laptop</option>
-          <option value="Desktop">Desktop</option>
-          <option value="Server">Server</option>
-          <option value="Network">Network</option>
-          <option value="Mobile">Mobile</option>
-          <option value="Printer">Printer</option>
-          <option value="Monitor">Monitor</option>
-          <option value="Other">Other</option>
+          <option value="Laptop">💻 Laptop</option>
+          <option value="Desktop">🖥️ Desktop</option>
+          <option value="Server">🖲️ Server</option>
+          <option value="Network">🌐 Network</option>
+          <option value="Mobile">📱 Mobile</option>
+          <option value="Printer">🖨️ Printer</option>
+          <option value="Monitor">📺 Monitor</option>
+          <option value="Other">⚙️ Other</option>
         </select>
         <select
           value={filters.status}
           onChange={(e) => handleFilterChange('status', e.target.value)}
         >
           <option value="">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-          <option value="Maintenance">Maintenance</option>
-          <option value="Disposed">Disposed</option>
-          <option value="Lost">Lost</option>
+          <option value="Active">✅ Active</option>
+          <option value="Inactive">⏸️ Inactive</option>
+          <option value="Maintenance">🔧 Maintenance</option>
+          <option value="Disposed">🗑️ Disposed</option>
+          <option value="Lost">❌ Lost</option>
         </select>
         <select
           value={filters.department}
           onChange={(e) => handleFilterChange('department', e.target.value)}
         >
           <option value="">All Departments</option>
-          <option value="IT">IT</option>
-          <option value="HR">HR</option>
-          <option value="Finance">Finance</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Operations">Operations</option>
-          <option value="Management">Management</option>
+          <option value="IT">💻 IT</option>
+          <option value="HR">👥 HR</option>
+          <option value="Finance">💰 Finance</option>
+          <option value="Marketing">📈 Marketing</option>
+          <option value="Operations">⚙️ Operations</option>
+          <option value="Management">👔 Management</option>
         </select>
         <input
           type="text"
-          placeholder="Location..."
+          placeholder="📍 Location..."
           value={filters.location}
           onChange={(e) => handleFilterChange('location', e.target.value)}
         />
@@ -118,8 +141,9 @@ const AssetList = ({ onEdit, onDelete }) => {
 
       {assets.length === 0 ? (
         <div className="no-assets">
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📦</div>
           <h3>No assets found</h3>
-          <p>Try adjusting your search filters or add a new asset.</p>
+          <p>Try adjusting your search filters or add your first IT asset to get started.</p>
         </div>
       ) : (
         <div className="asset-list">
@@ -139,19 +163,20 @@ const AssetList = ({ onEdit, onDelete }) => {
               )}
               
               <div className="asset-info">
-                <h3>{asset.name}</h3>
+                <h3>
+                  {getCategoryIcon(asset.category)} {asset.name}
+                </h3>
                 <p><strong>Category:</strong> <span className="highlight">{asset.category}</span></p>
-                <p><strong>Brand:</strong> {asset.brand}</p>
-                <p><strong>Model:</strong> {asset.model}</p>
-                {asset.serial_number && <p><strong>Serial:</strong> {asset.serial_number}</p>}
-                <p><strong>Location:</strong> {asset.location}</p>
-                <p><strong>Department:</strong> {asset.department}</p>
-                {asset.assigned_to && <p><strong>Assigned to:</strong> {asset.assigned_to}</p>}
-                {asset.cost && <p><strong>Cost:</strong> {formatCurrency(asset.cost)}</p>}
+                <p><strong>Brand & Model:</strong> {asset.brand} {asset.model}</p>
+                {asset.serial_number && <p><strong>Serial:</strong> <code>{asset.serial_number}</code></p>}
+                <p><strong>📍 Location:</strong> {asset.location}</p>
+                <p><strong>🏢 Department:</strong> {asset.department}</p>
+                {asset.assigned_to && <p><strong>👤 Assigned to:</strong> {asset.assigned_to}</p>}
+                {asset.cost && <p><strong>💰 Cost:</strong> <span className="highlight">{formatCurrency(asset.cost)}</span></p>}
                 {asset.warranty_expiry && (
-                  <p><strong>Warranty:</strong> {formatDate(asset.warranty_expiry)}</p>
+                  <p><strong>🛡️ Warranty:</strong> {formatDate(asset.warranty_expiry)}</p>
                 )}
-                {asset.notes && <p><strong>Notes:</strong> {asset.notes}</p>}
+                {asset.notes && <p><strong>📝 Notes:</strong> {asset.notes}</p>}
               </div>
               
               <div className="asset-actions">
@@ -170,6 +195,17 @@ const AssetList = ({ onEdit, onDelete }) => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      
+      {assets.length > 0 && (
+        <div style={{ 
+          textAlign: 'center', 
+          marginTop: '2rem', 
+          color: 'rgba(255,255,255,0.8)',
+          fontSize: '0.9rem'
+        }}>
+          Showing {assets.length} asset{assets.length !== 1 ? 's' : ''}
         </div>
       )}
     </div>

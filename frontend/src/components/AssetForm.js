@@ -18,6 +18,7 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
     notes: ''
   });
   const [image, setImage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (editingAsset) {
@@ -54,6 +55,8 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
@@ -69,42 +72,81 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
     } catch (error) {
       console.error('Form submission error:', error);
       alert('Error saving asset: ' + error.message);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const generateAssetTag = () => {
+    const categoryPrefixes = {
+      'Laptop': 'LAP',
+      'Desktop': 'DSK',
+      'Server': 'SRV',
+      'Network': 'NET',
+      'Mobile': 'MOB',
+      'Printer': 'PRT',
+      'Monitor': 'MON',
+      'Other': 'OTH'
+    };
+    
+    const prefix = categoryPrefixes[formData.category] || 'AST';
+    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    setFormData(prev => ({ ...prev, asset_tag: `${prefix}${randomNum}` }));
   };
 
   return (
     <div className="asset-form">
-      <h2>{editingAsset ? 'Edit Asset' : 'Add New Asset'}</h2>
+      <h2>
+        {editingAsset ? '✏️ Edit Asset' : '➕ Add New Asset'}
+      </h2>
       
       <form onSubmit={handleSubmit}>
         <div className="form-row">
           <div className="form-group">
-            <label>Asset Tag *</label>
-            <input
-              type="text"
-              name="asset_tag"
-              value={formData.asset_tag}
-              onChange={handleChange}
-              required
-              placeholder="e.g., LAP001"
-            />
+            <label>🏷️ Asset Tag *</label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="text"
+                name="asset_tag"
+                value={formData.asset_tag}
+                onChange={handleChange}
+                required
+                placeholder="e.g., LAP001"
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={generateAssetTag}
+                style={{
+                  padding: '0.875rem',
+                  background: '#667eea',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer'
+                }}
+                title="Generate Asset Tag"
+              >
+                🎲
+              </button>
+            </div>
           </div>
           <div className="form-group">
-            <label>Asset Name *</label>
+            <label>📝 Asset Name *</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="e.g., Dell Laptop"
+              placeholder="e.g., Dell Latitude 7420"
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Category *</label>
+            <label>📂 Category *</label>
             <select
               name="category"
               value={formData.category}
@@ -112,61 +154,61 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
               required
             >
               <option value="">Select Category</option>
-              <option value="Laptop">Laptop</option>
-              <option value="Desktop">Desktop</option>
-              <option value="Server">Server</option>
-              <option value="Network">Network</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Printer">Printer</option>
-              <option value="Monitor">Monitor</option>
-              <option value="Other">Other</option>
+              <option value="Laptop">💻 Laptop</option>
+              <option value="Desktop">🖥️ Desktop</option>
+              <option value="Server">🖲️ Server</option>
+              <option value="Network">🌐 Network Equipment</option>
+              <option value="Mobile">📱 Mobile Device</option>
+              <option value="Printer">🖨️ Printer</option>
+              <option value="Monitor">📺 Monitor</option>
+              <option value="Other">⚙️ Other</option>
             </select>
           </div>
           <div className="form-group">
-            <label>Status *</label>
+            <label>🔄 Status *</label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
               required
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Disposed">Disposed</option>
-              <option value="Lost">Lost</option>
+              <option value="Active">✅ Active</option>
+              <option value="Inactive">⏸️ Inactive</option>
+              <option value="Maintenance">🔧 Maintenance</option>
+              <option value="Disposed">🗑️ Disposed</option>
+              <option value="Lost">❌ Lost</option>
             </select>
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Brand *</label>
+            <label>🏢 Brand *</label>
             <input
               type="text"
               name="brand"
               value={formData.brand}
               onChange={handleChange}
               required
-              placeholder="e.g., Dell, HP, Cisco"
+              placeholder="e.g., Dell, HP, Apple, Cisco"
             />
           </div>
           <div className="form-group">
-            <label>Model *</label>
+            <label>🔧 Model *</label>
             <input
               type="text"
               name="model"
               value={formData.model}
               onChange={handleChange}
               required
-              placeholder="e.g., Latitude 7420"
+              placeholder="e.g., Latitude 7420, EliteBook 840"
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Serial Number</label>
+            <label>🔢 Serial Number</label>
             <input
               type="text"
               name="serial_number"
@@ -176,13 +218,14 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
             />
           </div>
           <div className="form-group">
-            <label>Cost</label>
+            <label>💰 Cost (USD)</label>
             <input
               type="number"
               name="cost"
               value={formData.cost}
               onChange={handleChange}
               step="0.01"
+              min="0"
               placeholder="0.00"
             />
           </div>
@@ -190,18 +233,18 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
 
         <div className="form-row">
           <div className="form-group">
-            <label>Location *</label>
+            <label>📍 Location *</label>
             <input
               type="text"
               name="location"
               value={formData.location}
               onChange={handleChange}
               required
-              placeholder="e.g., Office Floor 2, Room 201"
+              placeholder="e.g., Office Floor 2, Room 201, Data Center"
             />
           </div>
           <div className="form-group">
-            <label>Department *</label>
+            <label>🏢 Department *</label>
             <select
               name="department"
               value={formData.department}
@@ -209,19 +252,19 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
               required
             >
               <option value="">Select Department</option>
-              <option value="IT">IT</option>
-              <option value="HR">HR</option>
-              <option value="Finance">Finance</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Operations">Operations</option>
-              <option value="Management">Management</option>
+              <option value="IT">💻 IT</option>
+              <option value="HR">👥 HR</option>
+              <option value="Finance">💰 Finance</option>
+              <option value="Marketing">📈 Marketing</option>
+              <option value="Operations">⚙️ Operations</option>
+              <option value="Management">👔 Management</option>
             </select>
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Assigned To</label>
+            <label>👤 Assigned To</label>
             <input
               type="text"
               name="assigned_to"
@@ -231,18 +274,19 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
             />
           </div>
           <div className="form-group">
-            <label>Asset Image</label>
+            <label>📷 Asset Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
+              style={{ padding: '0.5rem' }}
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Purchase Date</label>
+            <label>📅 Purchase Date</label>
             <input
               type="date"
               name="purchase_date"
@@ -251,7 +295,7 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
             />
           </div>
           <div className="form-group">
-            <label>Warranty Expiry</label>
+            <label>🛡️ Warranty Expiry</label>
             <input
               type="date"
               name="warranty_expiry"
@@ -262,22 +306,31 @@ const AssetForm = ({ onSubmit, editingAsset, onCancel }) => {
         </div>
 
         <div className="form-group">
-          <label>Notes</label>
+          <label>📝 Notes</label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            placeholder="Additional notes about the asset..."
-            rows="3"
+            placeholder="Additional notes about the asset (specifications, condition, etc.)"
+            rows="4"
           />
         </div>
 
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>
-            Cancel
+          <button 
+            type="button" 
+            className="btn btn-secondary" 
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            ❌ Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
-            {editingAsset ? 'Update Asset' : 'Create Asset'}
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '⏳ Saving...' : (editingAsset ? '💾 Update Asset' : '➕ Create Asset')}
           </button>
         </div>
       </form>
