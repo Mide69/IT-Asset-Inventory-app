@@ -1,48 +1,61 @@
 #!/bin/bash
 
-# EC2 Ubuntu Deployment Script for Student Management System
+echo "🚀 Deploying IT Asset Inventory System"
+echo "====================================="
 
-echo "🚀 Starting deployment on EC2 Ubuntu..."
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
 
-# Update system
-sudo apt update && sudo apt upgrade -y
+check_status() {
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ $1${NC}"
+    else
+        echo -e "${RED}❌ $1 FAILED${NC}"
+        exit 1
+    fi
+}
 
-# Install Node.js 18
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install PostgreSQL
-sudo apt install postgresql postgresql-contrib -y
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-
-# Setup PostgreSQL
-sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'password';"
-sudo -u postgres createdb student_management
-
-# Install PM2 for process management
-sudo npm install -g pm2
-
-# Install dependencies
+echo "📦 Installing backend dependencies..."
 npm install
+check_status "Backend dependencies installed"
 
-# Setup frontend
-npm run install:frontend
+echo "📦 Installing frontend dependencies..."
+cd frontend && npm install && cd ..
+check_status "Frontend dependencies installed"
 
-# Create environment file
-cp .env.example .env
+echo "🔧 Setting up environment..."
+if [ ! -f .env ]; then
+    cp .env.example .env
+    check_status "Environment file created"
+else
+    echo -e "${GREEN}✅ Environment file exists${NC}"
+fi
 
-# Run database migration
+echo "🗄️ Running database migration..."
 npm run migrate
+check_status "Database migration completed"
 
-# Build frontend
+echo "🏗️ Building frontend..."
 npm run build
+check_status "Frontend built successfully"
 
-# Start application with PM2
-pm2 start src/server.js --name "student-management"
-pm2 startup
-pm2 save
+echo "📁 Creating uploads directory..."
+mkdir -p uploads
+chmod 755 uploads
+check_status "Uploads directory ready"
 
-echo "✅ Deployment completed!"
-echo "🌍 Access your app at: http://YOUR_EC2_IP:3000"
-echo "📊 Health check: http://YOUR_EC2_IP:3000/healthcheck"
+echo ""
+echo "🎉 DEPLOYMENT COMPLETED!"
+echo "======================="
+echo -e "${GREEN}✅ All dependencies installed${NC}"
+echo -e "${GREEN}✅ Database migrated${NC}"
+echo -e "${GREEN}✅ Frontend built${NC}"
+echo -e "${GREEN}✅ System ready to start${NC}"
+echo ""
+echo "🚀 To start the application:"
+echo "   npm start"
+echo ""
+echo "🧪 To test the system:"
+echo "   chmod +x test-system.sh && ./test-system.sh"

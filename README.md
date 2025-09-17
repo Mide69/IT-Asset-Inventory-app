@@ -1,179 +1,93 @@
-# 🎓 Student Management System
+# 💻 IT Asset Inventory System
 
-A complete CRUD REST API for student management built with Node.js, Express, SQLite, and React.
+A modern IT asset management system built with Node.js, PostgreSQL, and React.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-- **Complete CRUD Operations**: Create, Read, Update, Delete students
-- **RESTful API**: Proper HTTP verbs and status codes
-- **API Versioning**: `/api/v1/` endpoint structure
-- **Data Validation**: Input validation using Joi
-- **Modern Frontend**: React-based user interface
-- **Database**: SQLite with migrations
-- **Testing**: Unit tests with Jest
-- **Health Check**: `/healthcheck` endpoint
-- **Logging**: Request logging with Morgan
-- **Security**: Helmet.js for security headers
+### Prerequisites
+- Node.js 18+
+- PostgreSQL
+- Docker (optional)
 
-## 📋 Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-
-## 🛠️ Installation & Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd student-crud-api
-   ```
-
-2. **Install dependencies and setup**
-   ```bash
-   make setup
-   ```
-   Or manually:
-   ```bash
-   npm install
-   npm run install:frontend
-   npm run migrate
-   ```
-
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` file as needed.
-
-## 🏃‍♂️ Running the Application
-
-### Development Mode
+### Local Development
 ```bash
-make dev
-# or
-npm run dev
-```
+# Install dependencies
+npm install
+cd frontend && npm install && cd ..
 
-### Production Mode
-```bash
-make start
-# or
+# Setup database
+npm run migrate
+
+# Build frontend
+npm run build
+
+# Start application
 npm start
 ```
 
-### Build Frontend
+### Docker Deployment
 ```bash
-make build
-# or
-npm run build
+# Start PostgreSQL
+docker run -d --name postgres -e POSTGRES_DB=it_asset_inventory -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:13
+
+# Build and run app
+docker build -t it-asset-inventory .
+docker run -d --name it-asset-app -p 3000:3000 -e DB_HOST=host.docker.internal it-asset-inventory
 ```
 
-## 🧪 Testing
+## 📊 Features
 
-Run unit tests:
-```bash
-make test
-# or
-npm test
-```
+- ✅ Asset CRUD operations
+- ✅ Search and filtering
+- ✅ Image uploads
+- ✅ Category management
+- ✅ Status tracking
+- ✅ Department assignment
+- ✅ Warranty tracking
+- ✅ Cost management
+- ✅ Cyberpunk UI theme
 
-## 📡 API Endpoints
+## 🌍 Access
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/healthcheck` | Health check |
-| POST | `/api/v1/students` | Create student |
-| GET | `/api/v1/students` | Get all students |
-| GET | `/api/v1/students/:id` | Get student by ID |
-| PUT | `/api/v1/students/:id` | Update student |
-| DELETE | `/api/v1/students/:id` | Delete student |
+- **App**: http://localhost:3000
+- **API**: http://localhost:3000/api/v1/assets
+- **Health**: http://localhost:3000/healthcheck
 
-### Student Schema
-```json
-{
-  "name": "string (required, 2-100 chars)",
-  "email": "string (required, valid email)",
-  "age": "number (required, 16-100)",
-  "course": "string (required, 2-100 chars)"
-}
-```
-
-## 📱 Frontend
-
-The React frontend provides:
-- Student listing with cards
-- Add/Edit student forms
-- Delete confirmation
-- Responsive design
-- Real-time updates
-
-Access at: `http://localhost:3000`
-
-## 🗄️ Database
-
-SQLite database with automatic migrations:
-- **Location**: `./database/students.db`
-- **Migration**: Run `npm run migrate`
-- **Schema**: Students table with id, name, email, age, course, timestamps
-
-## 📮 Postman Collection
-
-Import `postman_collection.json` into Postman for API testing.
-
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
 ├── src/
-│   ├── config/          # Database configuration
-│   ├── controllers/     # Route controllers
-│   ├── middleware/      # Custom middleware
-│   ├── models/          # Data models
-│   ├── routes/          # API routes
-│   ├── migrations/      # Database migrations
-│   └── server.js        # Main server file
-├── frontend/            # React frontend
-├── __tests__/           # Unit tests
-├── database/            # SQLite database
-├── Makefile            # Build commands
-└── README.md
+│   ├── config/database.js
+│   ├── controllers/assetController.js
+│   ├── middleware/validation.js
+│   ├── models/Asset.js
+│   ├── routes/assets.js
+│   ├── migrations/migrate.js
+│   └── server.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.js
+│   │   └── App.css
+│   └── public/
+├── Dockerfile
+├── package.json
+└── .env.example
 ```
 
-## 🔧 Available Commands
+## 🔧 Environment Variables
 
-```bash
-make install     # Install all dependencies
-make migrate     # Run database migrations
-make start       # Start production server
-make dev         # Start development server
-make test        # Run tests
-make build       # Build frontend
-make clean       # Clean all dependencies
-make setup       # Complete setup (install + migrate)
 ```
-
-## 🌟 Best Practices Implemented
-
-- ✅ RESTful API design
-- ✅ Proper HTTP status codes
-- ✅ Input validation
-- ✅ Error handling
-- ✅ Environment configuration
-- ✅ Database migrations
-- ✅ Unit testing
-- ✅ Security headers
-- ✅ Request logging
-- ✅ API versioning
-- ✅ Responsive frontend
-
-## 🚀 Deployment
-
-The application is ready for deployment on platforms like:
-- Heroku
-- Railway
-- Vercel
-- AWS
-- DigitalOcean
+PORT=3000
+NODE_ENV=production
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=it_asset_inventory
+DB_USER=postgres
+DB_PASSWORD=password
+LOG_LEVEL=info
+```
 
 ## 📄 License
 
-MIT License
+MIT
