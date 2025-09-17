@@ -5,34 +5,26 @@ A modern IT asset management system built with Node.js, PostgreSQL, and React.
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL
-- Docker (optional)
+- Node.js 18+ (for local development)
+- Docker (for containerized deployment)
 
 ### Local Development
 ```bash
-# Install dependencies
-npm install
-cd frontend && npm install && cd ..
-
-# Setup database
-npm run migrate
-
-# Build frontend
-npm run build
+# Install dependencies and setup
+./deploy.sh
 
 # Start application
 npm start
 ```
 
-### Docker Deployment
+### Docker Deployment (Recommended)
 ```bash
-# Start PostgreSQL
-docker run -d --name postgres -e POSTGRES_DB=it_asset_inventory -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:13
+# Linux/Mac
+chmod +x deploy-docker.sh
+./deploy-docker.sh
 
-# Build and run app
-docker build -t it-asset-inventory .
-docker run -d --name it-asset-app -p 3000:3000 -e DB_HOST=host.docker.internal it-asset-inventory
+# Windows
+deploy-docker.bat
 ```
 
 ## 📊 Features
@@ -40,8 +32,8 @@ docker run -d --name it-asset-app -p 3000:3000 -e DB_HOST=host.docker.internal i
 - ✅ Asset CRUD operations
 - ✅ Search and filtering
 - ✅ Image uploads
-- ✅ Category management
-- ✅ Status tracking
+- ✅ Category management (Laptop, Desktop, Server, etc.)
+- ✅ Status tracking (Active, Maintenance, Disposed, etc.)
 - ✅ Department assignment
 - ✅ Warranty tracking
 - ✅ Cost management
@@ -52,6 +44,29 @@ docker run -d --name it-asset-app -p 3000:3000 -e DB_HOST=host.docker.internal i
 - **App**: http://localhost:3000
 - **API**: http://localhost:3000/api/v1/assets
 - **Health**: http://localhost:3000/healthcheck
+
+## 🐳 Docker Architecture
+
+```
+┌─────────────────────┐    ┌─────────────────────┐
+│   PostgreSQL DB     │    │   IT Asset App      │
+│   (postgres-db)     │◄──►│   (it-asset-app)    │
+│   Port: 5432        │    │   Port: 3000        │
+│   Volume: postgres  │    │   Volume: uploads   │
+└─────────────────────┘    └─────────────────────┘
+```
+
+## 🔧 Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | production | Environment mode |
+| `PORT` | 3000 | Application port |
+| `DB_HOST` | postgres-db | Database host |
+| `DB_PORT` | 5432 | Database port |
+| `DB_NAME` | it_asset_inventory | Database name |
+| `DB_USER` | postgres | Database user |
+| `DB_PASSWORD` | password | Database password |
 
 ## 📁 Project Structure
 
@@ -66,26 +81,33 @@ docker run -d --name it-asset-app -p 3000:3000 -e DB_HOST=host.docker.internal i
 │   └── server.js
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── App.js
-│   │   └── App.css
-│   └── public/
-├── Dockerfile
-├── package.json
-└── .env.example
+│   │   ├── components/AssetList.js, AssetForm.js
+│   │   ├── App.js, App.css
+│   │   └── index.js
+│   └── public/index.html
+├── Dockerfile (Multi-stage build)
+├── deploy-docker.sh (Container deployment)
+└── package.json
 ```
 
-## 🔧 Environment Variables
+## 🛠️ Management Commands
 
-```
-PORT=3000
-NODE_ENV=production
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=it_asset_inventory
-DB_USER=postgres
-DB_PASSWORD=password
-LOG_LEVEL=info
+```bash
+# Docker deployment
+./deploy-docker.sh
+
+# Stop containers
+./stop-docker.sh
+
+# View logs
+docker logs it-asset-app
+docker logs postgres-db
+
+# Database access
+docker exec -it postgres-db psql -U postgres -d it_asset_inventory
+
+# Container shell
+docker exec -it it-asset-app sh
 ```
 
 ## 📄 License

@@ -35,10 +35,10 @@ COPY --from=frontend-builder /app/frontend/build ./frontend/build
 # Create uploads directory
 RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
 
-# Set environment variables with defaults
+# Set default environment variables (will be overridden at runtime)
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV DB_HOST=host.docker.internal
+ENV DB_HOST=postgres-db
 ENV DB_PORT=5432
 ENV DB_NAME=it_asset_inventory
 ENV DB_USER=postgres
