@@ -121,24 +121,17 @@ test: ## Run API tests
 
 test-ci: ## Run tests for CI pipeline
 	@echo "$(GREEN)🧪 Running CI tests...$(NC)"
-	@echo "$(GREEN)🧹 Cleaning up existing containers...$(NC)"
-	@docker stop $(shell docker ps -q --filter "name=it-asset") 2>/dev/null || true
-	@docker rm $(shell docker ps -aq --filter "name=it-asset") 2>/dev/null || true
-	@docker network rm it-asset-inventory-app_it-asset-network 2>/dev/null || true
-	@echo "$(GREEN)🗄️ Starting database for CI...$(NC)"
-	@POSTGRES_PORT=5433 $(DOCKER_COMPOSE) -f docker-compose.yml up -d postgres
-	@sleep 10
-	@echo "$(GREEN)🔄 Running migrations...$(NC)"
-	@docker exec $(DB_CONTAINER) psql -U $(DB_USER) -d $(DB_NAME) -f /docker-entrypoint-initdb.d/init.sql || true
-	@echo "$(GREEN)⏳ Starting API container for testing...$(NC)"
-	@API_PORT=3001 $(DOCKER_COMPOSE) -f docker-compose.yml up -d app
-	@sleep 15
+	@echo "$(GREEN)🧹 Cleaning up existing CI containers...$(NC)"
+	@docker-compose -f docker-compose.ci.yml down -v --remove-orphans 2>/dev/null || true
+	@echo "$(GREEN)🗄️ Starting CI environment...$(NC)"
+	@docker-compose -f docker-compose.ci.yml up -d --build
+	@sleep 20
 	@echo "$(GREEN)🔍 Testing health endpoint...$(NC)"
 	@curl -s http://localhost:3001/healthcheck | grep -q '"status":"OK"' && echo "$(GREEN)✅ Health check passed$(NC)" || { echo "$(RED)❌ Health check failed$(NC)"; exit 1; }
 	@echo "$(GREEN)🔍 Testing API endpoint...$(NC)"
 	@curl -s http://localhost:3001/api/v1/assets | grep -q '"success":true' && echo "$(GREEN)✅ API endpoint working$(NC)" || { echo "$(RED)❌ API endpoint failed$(NC)"; exit 1; }
 	@echo "$(GREEN)✅ All CI tests passed$(NC)"
-	@$(DOCKER_COMPOSE) down
+	@docker-compose -f docker-compose.ci.yml down
 
 docker-push: ## Build and push Docker image to registry
 	@echo "$(GREEN)🐳 Building and pushing Docker image...$(NC)"
