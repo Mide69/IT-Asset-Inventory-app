@@ -119,9 +119,18 @@ test: ## Run API tests
 		echo "$(RED)❌ API container is not running. Run 'make start' first.$(NC)"; \
 	fi
 
-test-ci: start-db ## Run tests for CI pipeline
+test-ci: ## Run tests for CI pipeline
 	@echo "$(GREEN)🧪 Running CI tests...$(NC)"
-	@echo "$(GREEN)⏳ Starting temporary API container for testing...$(NC)"
+	@echo "$(GREEN)🧹 Cleaning up existing containers...$(NC)"
+	@$(DOCKER_COMPOSE) down -v --remove-orphans || true
+	@docker stop $(DB_CONTAINER) $(API_CONTAINER) 2>/dev/null || true
+	@docker rm $(DB_CONTAINER) $(API_CONTAINER) 2>/dev/null || true
+	@echo "$(GREEN)🗄️ Starting database for CI...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres
+	@sleep 10
+	@echo "$(GREEN)🔄 Running migrations...$(NC)"
+	@docker exec $(DB_CONTAINER) psql -U $(DB_USER) -d $(DB_NAME) -f /docker-entrypoint-initdb.d/init.sql || true
+	@echo "$(GREEN)⏳ Starting API container for testing...$(NC)"
 	@$(DOCKER_COMPOSE) up -d app
 	@sleep 15
 	@echo "$(GREEN)🔍 Testing health endpoint...$(NC)"
