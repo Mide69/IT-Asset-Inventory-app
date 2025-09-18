@@ -27,7 +27,7 @@ curl -o actions-runner-linux-x64-2.311.0.tar.gz -L https://github.com/actions/ru
 tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
 
 # Configure the runner
-./config.sh --url https://github.com/Mide69/IT-Asset-Inventory-app --token YOUR_TOKEN
+./config.sh --url https://github.com/Mide69/IT-Asset-Inventory-app --token PJOTJZ2BT2XHBFDPJFWEH3IZRF4C
 
 # Install as a service (optional but recommended)
 sudo ./svc.sh install

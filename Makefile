@@ -171,6 +171,15 @@ clean: stop ## Clean up containers, images, and volumes
 	docker system prune -f
 	@echo "$(GREEN)✅ Cleanup completed$(NC)"
 
+clean-project: ## Clean up project files and dependencies
+	@echo "$(GREEN)🧹 Cleaning up project files...$(NC)"
+	rm -rf node_modules frontend/node_modules frontend/build
+	rm -rf uploads/* && mkdir -p uploads
+	rm -f actions-runner-*.tar.gz actions-runner-*.zip
+	rm -rf -- "-p"
+	find . -name "*.log" -type f -delete
+	@echo "$(GREEN)✅ Project cleanup completed$(NC)"
+
 restart: stop start ## Restart the complete application
 
 rebuild: stop ## Rebuild and restart everything

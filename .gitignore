@@ -68,6 +68,13 @@ Thumbs.db
 # GitHub Actions Runner
 actions-runner/
 actions-runner-*.tar.gz
+actions-runner-*.zip
 
 # Uploads
 uploads/
+
+# Cleanup
+cleanup.sh
+
+# Temporary directories
+-p/
