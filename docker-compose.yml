@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -35,7 +35,7 @@ services:
       DB_PASSWORD: password
       LOG_LEVEL: info
     ports:
-      - "3000:3000"
+      - "${API_PORT:-3000}:3000"
     volumes:
       - uploads_data:/app/uploads
     networks:
