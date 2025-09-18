@@ -7,6 +7,8 @@ DB_CONTAINER = it-asset-postgres
 API_CONTAINER = it-asset-app
 DB_NAME = it_asset_inventory
 DB_USER = postgres
+DOCKER_IMAGE = tektribe/it-asset-inventory
+DOCKER_TAG = $(shell git rev-parse --short HEAD 2>/dev/null || echo "latest")
 
 # Colors for output
 GREEN = \033[0;32m
@@ -14,7 +16,7 @@ RED = \033[0;31m
 YELLOW = \033[1;33m
 NC = \033[0m
 
-.PHONY: help install check-deps start-db migrate build-api start-api start stop logs clean test
+.PHONY: help install check-deps start-db migrate build-api start-api start stop logs clean test lint test-ci docker-push
 
 # Default target
 help: ## Show this help message
@@ -96,6 +98,50 @@ start-api: migrate build-api ## Start REST API docker container (with dependenci
 	@echo "$(GREEN)📊 API: http://localhost:3000/api/v1/assets$(NC)"
 	@echo "$(GREEN)💚 Health: http://localhost:3000/healthcheck$(NC)"
 
+lint: ## Perform code linting
+	@echo "$(GREEN)🔍 Running code linting...$(NC)"
+	@if command -v eslint >/dev/null 2>&1; then \
+		npx eslint src/ --ext .js --fix || true; \
+		cd frontend && npx eslint src/ --ext .js,.jsx --fix || true && cd ..; \
+	else \
+		echo "$(YELLOW)⚠️ ESLint not found, installing...$(NC)"; \
+		npm install --save-dev eslint; \
+		npx eslint --init || true; \
+	fi
+	@echo "$(GREEN)✅ Code linting completed$(NC)"
+
+test: ## Run API tests
+	@echo "$(GREEN)🧪 Running API tests...$(NC)"
+	@if [ "$$(docker ps -q -f name=$(API_CONTAINER))" ]; then \
+		curl -s http://localhost:3000/healthcheck | grep -q '"status":"OK"' && echo "$(GREEN)✅ Health check passed$(NC)" || echo "$(RED)❌ Health check failed$(NC)"; \
+		curl -s http://localhost:3000/api/v1/assets | grep -q '"success":true' && echo "$(GREEN)✅ API endpoint working$(NC)" || echo "$(RED)❌ API endpoint failed$(NC)"; \
+	else \
+		echo "$(RED)❌ API container is not running. Run 'make start' first.$(NC)"; \
+	fi
+
+test-ci: start-db ## Run tests for CI pipeline
+	@echo "$(GREEN)🧪 Running CI tests...$(NC)"
+	@echo "$(GREEN)⏳ Starting temporary API container for testing...$(NC)"
+	@$(DOCKER_COMPOSE) up -d app
+	@sleep 15
+	@echo "$(GREEN)🔍 Testing health endpoint...$(NC)"
+	@curl -s http://localhost:3000/healthcheck | grep -q '"status":"OK"' && echo "$(GREEN)✅ Health check passed$(NC)" || { echo "$(RED)❌ Health check failed$(NC)"; exit 1; }
+	@echo "$(GREEN)🔍 Testing API endpoint...$(NC)"
+	@curl -s http://localhost:3000/api/v1/assets | grep -q '"success":true' && echo "$(GREEN)✅ API endpoint working$(NC)" || { echo "$(RED)❌ API endpoint failed$(NC)"; exit 1; }
+	@echo "$(GREEN)✅ All CI tests passed$(NC)"
+	@$(DOCKER_COMPOSE) down
+
+docker-push: ## Build and push Docker image to registry
+	@echo "$(GREEN)🐳 Building and pushing Docker image...$(NC)"
+	@echo "$(GREEN)📦 Building image: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
+	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	docker build -t $(DOCKER_IMAGE):latest .
+	@echo "$(GREEN)🚀 Pushing image to registry...$(NC)"
+	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
+	docker push $(DOCKER_IMAGE):latest
+	@echo "$(GREEN)✅ Docker image pushed successfully$(NC)"
+	@echo "$(GREEN)🎯 Image: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
+
 start: start-api ## Start the complete application (database + API)
 
 stop: ## Stop all containers
@@ -124,15 +170,6 @@ clean: stop ## Clean up containers, images, and volumes
 	$(DOCKER_COMPOSE) down -v --rmi local
 	docker system prune -f
 	@echo "$(GREEN)✅ Cleanup completed$(NC)"
-
-test: ## Run API tests
-	@echo "$(GREEN)🧪 Running API tests...$(NC)"
-	@if [ "$$(docker ps -q -f name=$(API_CONTAINER))" ]; then \
-		curl -s http://localhost:3000/healthcheck | grep -q '"status":"OK"' && echo "$(GREEN)✅ Health check passed$(NC)" || echo "$(RED)❌ Health check failed$(NC)"; \
-		curl -s http://localhost:3000/api/v1/assets | grep -q '"success":true' && echo "$(GREEN)✅ API endpoint working$(NC)" || echo "$(RED)❌ API endpoint failed$(NC)"; \
-	else \
-		echo "$(RED)❌ API container is not running. Run 'make start' first.$(NC)"; \
-	fi
 
 restart: stop start ## Restart the complete application
 

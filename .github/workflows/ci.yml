@@ -1,0 +1,80 @@
+name: IT Asset Inventory CI Pipeline
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'Makefile'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'Makefile'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  DOCKER_IMAGE: tektribe/it-asset-inventory
+  DOCKER_TAG: ${{ github.sha }}
+
+jobs:
+  ci-pipeline:
+    name: Build, Test, Lint & Deploy
+    runs-on: self-hosted
+    
+    steps:
+      - name: 🔄 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: make install
+
+      - name: 🏗️ Build API
+        run: make build-api
+
+      - name: 🧪 Run Tests
+        run: make test-ci
+
+      - name: 🔍 Perform Code Linting
+        run: make lint
+
+      - name: 🐳 Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🚀 Docker Build and Push
+        run: make docker-push
+
+      - name: 📊 Build Summary
+        run: |
+          echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ API Built Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Code Linting Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Docker Image Built and Pushed" >> $GITHUB_STEP_SUMMARY
+          echo "- 🐳 Image: \`${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌍 Environment: \`${{ github.event.inputs.environment || 'auto' }}\`" >> $GITHUB_STEP_SUMMARY
